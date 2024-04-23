@@ -28,27 +28,30 @@ public class Create {
     }
 
     private static void insertOneDocument(MongoCollection<Document> gradesCollection) {
-        gradesCollection.insertOne(generateNewGrade(10000d, 1d));
-        System.out.println("One grade inserted for studentId 10000.");
+        gradesCollection.insertOne(generateNewGrade(10002d, 1d));
+        System.out.println("One grade inserted for studentId 10002.");
     }
 
     private static void insertManyDocuments(MongoCollection<Document> gradesCollection) {
         List<Document> grades = new ArrayList<>();
         for (double classId = 1d; classId <= 10d; classId++) {
-            grades.add(generateNewGrade(10001d, classId));
+            grades.add(generateNewGrade(10003d, classId));
         }
 
         gradesCollection.insertMany(grades, new InsertManyOptions().ordered(false));
-        System.out.println("Ten grades inserted for studentId 10001.");
+        System.out.println("Ten grades inserted for studentId 10003.");
     }
 
     private static Document generateNewGrade(double studentId, double classId) {
-        List<Document> scores = List.of(new Document("type", "exam").append("score", rand.nextDouble() * 100),
-                new Document("type", "quiz").append("score", rand.nextDouble() * 100),
-                new Document("type", "homework").append("score", rand.nextDouble() * 100),
-                new Document("type", "homework").append("score", rand.nextDouble() * 100));
+        List<Document> scores = List.of(
+                new Document("type", "exam").append("score", Math.round((50 + rand.nextDouble() * 50) * 1000.0) / 1000.0),
+                new Document("type", "quiz").append("score", Math.round((50 + rand.nextDouble() * 50) * 1000.0) / 1000.0),
+                new Document("type", "homework").append("score", Math.round((50 + rand.nextDouble() * 50) * 1000.0) / 1000.0),
+                new Document("type", "homework").append("score", Math.round((50 + rand.nextDouble() * 50) * 1000.0) / 1000.0)
+        );
         return new Document("_id", new ObjectId()).append("student_id", studentId)
                 .append("class_id", classId)
                 .append("scores", scores);
     }
+
 }

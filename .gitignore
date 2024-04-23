@@ -36,3 +36,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### My Files ###
+src/main/java/com/mongodb/quickstart/Read.java
