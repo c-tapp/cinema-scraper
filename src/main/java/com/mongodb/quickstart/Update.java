@@ -26,26 +26,26 @@ public class Update {
             MongoCollection<Document> gradesCollection = sampleTrainingDB.getCollection("grades");
 
             // update one document
-            Bson filter = eq("student_id", 10003);
+            Bson filter = eq("student_id", 10000);
             Bson updateOperation = set("comment", "You should learn MongoDB!");
             UpdateResult updateResult = gradesCollection.updateOne(filter, updateOperation);
-            System.out.println("=> Updating the doc with {\"student_id\":10003}. Adding comment.");
+            System.out.println("=> Updating the doc with {\"student_id\":10000}. Adding comment.");
             System.out.println(gradesCollection.find(filter).first().toJson(prettyPrint));
             System.out.println(updateResult);
 
             // upsert
-            filter = and(eq("student_id", 10004d), eq("class_id", 10d));
-            updateOperation = push("comments", "Upserting = Update + inserting.");
+            filter = and(eq("student_id", 10002d), eq("class_id", 10d));
+            updateOperation = push("comments", "You will learn a lot if you read the MongoDB blog!");
             UpdateOptions options = new UpdateOptions().upsert(true);
             updateResult = gradesCollection.updateOne(filter, updateOperation, options);
-            System.out.println("\n=> Upsert document with {\"student_id\":10004.0, \"class_id\": 10.0} because it doesn't exist yet.");
+            System.out.println("\n=> Upsert document with {\"student_id\":10002.0, \"class_id\": 10.0} because it doesn't exist yet.");
             System.out.println(updateResult);
             System.out.println(gradesCollection.find(filter).first().toJson(prettyPrint));
 
             // update many documents
-            filter = eq("student_id", 10003);
+            filter = eq("student_id", 10001);
             updateResult = gradesCollection.updateMany(filter, updateOperation);
-            System.out.println("\n=> Updating all the documents with {\"student_id\":10003}.");
+            System.out.println("\n=> Updating all the documents with {\"student_id\":10001}.");
             System.out.println(updateResult);
 
             // findOneAndUpdate

@@ -35,7 +35,7 @@ public class Delete {
             System.out.println(result);
 
             // delete the entire collection and its metadata (indexes, chunk metadata, etc).
-            gradesCollection.drop();
+            // gradesCollection.drop();
         }
     }
 }

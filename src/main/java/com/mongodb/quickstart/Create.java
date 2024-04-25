@@ -28,18 +28,18 @@ public class Create {
     }
 
     private static void insertOneDocument(MongoCollection<Document> gradesCollection) {
-        gradesCollection.insertOne(generateNewGrade(10002d, 1d));
-        System.out.println("One grade inserted for studentId 10002.");
+        gradesCollection.insertOne(generateNewGrade(10000d, 1d));
+        System.out.println("One grade inserted for studentId 10000.");
     }
 
     private static void insertManyDocuments(MongoCollection<Document> gradesCollection) {
         List<Document> grades = new ArrayList<>();
         for (double classId = 1d; classId <= 10d; classId++) {
-            grades.add(generateNewGrade(10003d, classId));
+            grades.add(generateNewGrade(10001d, classId));
         }
 
         gradesCollection.insertMany(grades, new InsertManyOptions().ordered(false));
-        System.out.println("Ten grades inserted for studentId 10003.");
+        System.out.println("Ten grades inserted for studentId 10001.");
     }
 
     private static Document generateNewGrade(double studentId, double classId) {

@@ -20,16 +20,16 @@ public class Read {
             MongoCollection<Document> gradesCollection = sampleTrainingDB.getCollection("grades");
 
             // find one document with new Document
-            Document student1 = gradesCollection.find(new Document("student_id", 10003)).first();
+            Document student1 = gradesCollection.find(new Document("student_id", 10001)).first();
             if (student1 != null) {
                 JsonWriterSettings prettyPrint = JsonWriterSettings.builder().indent(true).build();
                 System.out.println("Student 1: " + student1.toJson(prettyPrint));
             } else {
-                System.out.println("No document found for student_id 10003.");
+                System.out.println("No document found for student_id 10001.");
             }
 
             // find one document with Filters.eq()
-            Document student2 = gradesCollection.find(eq("student_id", 10003)).skip(1).first();
+            Document student2 = gradesCollection.find(eq("student_id", 10001)).skip(1).first();
             System.out.println("Student 2: " + student2.toJson());
 
             // find a list of documents and iterate throw it using an iterator.
