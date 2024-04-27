@@ -10,44 +10,98 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.time.Year;
 
 public class DynamicMalScraper {
 
     private static final Duration WAIT_TIME = Duration.ofSeconds(5);
+    private WebDriver driver;
+    private String targetURL = "https://myanimelist.net/anime/season/";
+    private String season;
 
-    public static void main(String[] args) {
-        WebDriver driver = new FirefoxDriver();
-        driver.get("https://myanimelist.net/anime/season");
+    /**
+     * Constructor for Dynamic MAL Scraper.
+     *
+     * @param year release year
+     * @param seasonNum release season (1-winter, 2-spring, 3-summer, 4-fall)
+     */
+    public DynamicMalScraper(int year, int seasonNum) {
+        int currentYear = Year.now().getValue();
+        this.driver = new FirefoxDriver();
 
-        List<Map<String, Object>> Spring24TvNew = new ArrayList<>();
-        List<Map<String, Object>> Spring24Movies = new ArrayList<>();
+        if (year < 1963 || year > currentYear) {
+            closeDriver();
+            throw new IllegalArgumentException("Year must be between 1963 and " + currentYear + ".");
+        }
 
-        try {
-            WebElement tvNewContainer = new WebDriverWait(driver, WAIT_TIME)
-                    .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.seasonal-anime-list:nth-child(1)")));
-            List<WebElement> tvNewEntries = tvNewContainer.findElements(By.cssSelector("div.seasonal-anime.js-seasonal-anime"));
-            Spring24TvNew = processEntries(tvNewEntries);
+        if (seasonNum < 1 || seasonNum > 4){
+            closeDriver();
+            throw new IllegalArgumentException("Seasons must be between 1-4 (winter-fall).");
+        }
 
-            WebElement movieContainer = new WebDriverWait(driver, WAIT_TIME)
-                    .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.seasonal-anime-list:nth-child(6)")));
-            List<WebElement> movieEntries = movieContainer.findElements(By.cssSelector("div.seasonal-anime.js-seasonal-anime"));
-            Spring24Movies = processEntries(movieEntries);
+        switch(seasonNum){
+            case 1 -> season = "winter";
+            case 2 -> season = "spring";
+            case 3 -> season = "summer";
+            case 4 -> season = "fall";
+        }
 
-            for (Map<String, Object> entry : Spring24TvNew) {
-                System.out.println(entry);
-            }
+        targetURL += year + "/" + season;
+    }
 
-            for (Map<String, Object> entry : Spring24Movies) {
-                System.out.println(entry);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
+    /**
+     * Closes the WebDriver.
+     */
+    public void closeDriver() {
+        if (driver != null) {
             driver.quit();
         }
     }
 
+    /**
+     * Fetches data for TV shows released in a specific year/season.
+     *
+     * @return a list of maps containing TV show data
+     */
+    public List<Map<String, Object>> getTvNew() {
+        return scrapeEntries("div.seasonal-anime-list:nth-child(1)");
+    }
+
+    /**
+     * Fetches data for movies released in a specific year/season.
+     *
+     * @return a list of maps containing movie data
+     */
+    public List<Map<String, Object>> getMovies() {
+        return scrapeEntries("div.seasonal-anime-list:nth-child(6)");
+    }
+
+    /**
+     * Performs web scraping to extract data of specific targetDiv.
+     *
+     * @param targetDiv where to scrape the data on the webpage
+     * @return a list of maps, containing the key-value pairs representing the target data
+     */
+    private List<Map<String, Object>> scrapeEntries(String targetDiv) {
+        List<Map<String, Object>> entries = new ArrayList<>();
+        try {
+            driver.get(targetURL);
+            WebElement container = new WebDriverWait(driver, WAIT_TIME)
+                    .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(targetDiv)));
+            List<WebElement> malEntries = container.findElements(By.cssSelector("div.seasonal-anime.js-seasonal-anime"));
+            entries = processEntries(malEntries);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return entries;
+    }
+
+    /**
+     * Processes a list of WebElement instances representing movies/tv shows to extract relevant data.
+     *
+     * @param animeEntries list of WebElement instances representing movies/tv shows
+     * @return a list of maps, containing the key-value pairs representing the target data
+     */
     private static List<Map<String, Object>> processEntries(List<WebElement> animeEntries) {
         List<Map<String, Object>> entriesList = new ArrayList<>();
 
@@ -82,5 +136,24 @@ public class DynamicMalScraper {
             entriesList.add(animeMap);
         }
         return entriesList;
+    }
+
+    /**
+     * Main method for testing purposes.
+     *
+     * @param args unused
+     */
+    public static void main(String[] args) {
+        DynamicMalScraper scraper = new DynamicMalScraper(2024, 1);
+        try {
+            List<Map<String, Object>> Spring24TvNew = scraper.getTvNew();
+            List<Map<String, Object>> Spring24Movies = scraper.getMovies();
+
+            Spring24TvNew.forEach(System.out::println);
+            Spring24Movies.forEach(System.out::println);
+
+        } finally {
+            scraper.closeDriver();
+        }
     }
 }
