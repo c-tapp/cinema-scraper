@@ -102,37 +102,46 @@ public class DynamicMalScraper {
      * @param animeEntries list of WebElement instances representing movies/tv shows
      * @return a list of maps, containing the key-value pairs representing the target data
      */
-    private static List<Map<String, Object>> processEntries(List<WebElement> animeEntries) {
+    private List<Map<String, Object>> processEntries(List<WebElement> animeEntries) {
+        // Initialize list
         List<Map<String, Object>> entriesList = new ArrayList<>();
 
+        // For each entry (show/movie)
         for (WebElement entry : animeEntries) {
+            //Initialize map
             Map<String, Object> animeMap = new LinkedHashMap<>();
 
+            // Find original title, skip entry if blank
             String titleJP = entry.findElement(By.cssSelector("h2.h2_anime_title")).getText();
             if (titleJP.isBlank()) {
                 continue;
             }
 
+            // Find english title if available, else use original title
             List<WebElement> h3Elements = entry.findElements(By.cssSelector("h3.h3_anime_subtitle"));
             String title = h3Elements.isEmpty() ? titleJP : h3Elements.get(0).getText();
             animeMap.put("Title", title);
 
+            // Find start date
             String startDate = entry.findElement(By.cssSelector("div.info span.item")).getText();
             animeMap.put("Start Date", startDate);
 
+            // Find list of genres
             List<String> genres = entry.findElements(By.cssSelector("div.genres-inner span.genre a"))
                     .stream().map(WebElement::getText).collect(Collectors.toList());
             animeMap.put("Genres", genres);
 
+            // Find studio, accounts for null values
             String studio = "";
             WebElement studioElement = entry.findElement(By.cssSelector("div.property span.item"));
             if (studioElement.findElements(By.tagName("a")).size() > 0) {
-                studio = studioElement.findElement(By.tagName("a")).getText();
+                studio = studioElement.findElement(By.tagName("a")).getText();  // Uses hyperlink text
             } else {
-                studio = studioElement.getText();
+                studio = studioElement.getText();   // Uses plaintext
             }
             animeMap.put("Studio", studio);
 
+            // Add map to list
             entriesList.add(animeMap);
         }
         return entriesList;

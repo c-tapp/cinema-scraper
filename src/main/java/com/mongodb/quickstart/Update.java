@@ -51,10 +51,10 @@ public class Update {
             // findOneAndUpdate
             filter = eq("student_id", 10000);
             Bson update1 = inc("x", 10); // increment x by 10. As x doesn't exist yet, x=10.
-            Bson update2 = rename("class_id", "new_class_id"); // rename variable "class_id" in "new_class_id".
+            Bson update2 = rename("class_id", "new_class_id"); // rename variable "class_id" to "new_class_id".
             Bson update3 = mul("scores.0.score", 2); // multiply the first score in the array by 2.
-            Bson update4 = addToSet("comments", "This comment is uniq"); // creating an array with a comment.
-            Bson update5 = addToSet("comments", "This comment is uniq"); // using addToSet so no effect.
+            Bson update4 = addToSet("comments", "This comment is unique"); // creating an array with a comment.
+            Bson update5 = addToSet("comments", "This comment is unique"); // using addToSet so no effect.
             Bson updates = combine(update1, update2, update3, update4, update5);
             // returns the old version of the document before the update.
             Document oldVersion = gradesCollection.findOneAndUpdate(filter, updates);
