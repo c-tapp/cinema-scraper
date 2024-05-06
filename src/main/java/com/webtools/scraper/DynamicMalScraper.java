@@ -120,16 +120,16 @@ public class DynamicMalScraper {
             // Find english title if available, else use original title
             List<WebElement> h3Elements = entry.findElements(By.cssSelector("h3.h3_anime_subtitle"));
             String title = h3Elements.isEmpty() ? titleJP : h3Elements.get(0).getText();
-            animeMap.put("Title", title);
+            animeMap.put("title", title);
 
             // Find start date
             String startDate = entry.findElement(By.cssSelector("div.info span.item")).getText();
-            animeMap.put("Start Date", startDate);
+            animeMap.put("start_date", startDate);
 
             // Find list of genres
             List<String> genres = entry.findElements(By.cssSelector("div.genres-inner span.genre a"))
                     .stream().map(WebElement::getText).collect(Collectors.toList());
-            animeMap.put("Genres", genres);
+            animeMap.put("genres", genres);
 
             // Find studio, accounts for null values
             String studio = "";
@@ -139,7 +139,15 @@ public class DynamicMalScraper {
             } else {
                 studio = studioElement.getText();   // Uses plaintext
             }
-            animeMap.put("Studio", studio);
+            animeMap.put("studio", studio);
+
+            // Find imageURL, if lazyLoad use data-src
+            WebElement imageElement = entry.findElement(By.cssSelector("div.image a img"));
+            String imageUrl = imageElement.getAttribute("src");
+            if (imageUrl == null || imageUrl.isEmpty()) {
+                imageUrl = imageElement.getAttribute("data-src");
+            }
+            animeMap.put("image_url", imageUrl);
 
             // Add map to list
             entriesList.add(animeMap);
@@ -153,7 +161,7 @@ public class DynamicMalScraper {
      * @param args unused
      */
     public static void main(String[] args) {
-        DynamicMalScraper scraper = new DynamicMalScraper(2024, 1);
+        DynamicMalScraper scraper = new DynamicMalScraper(2024, 2);
         try {
             List<Map<String, Object>> Spring24TvNew = scraper.getTvNew();
             List<Map<String, Object>> Spring24Movies = scraper.getMovies();
