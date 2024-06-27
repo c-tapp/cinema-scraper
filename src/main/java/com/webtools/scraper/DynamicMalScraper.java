@@ -15,6 +15,9 @@ import java.time.Year;
 public class DynamicMalScraper {
 
     private static final Duration WAIT_TIME = Duration.ofSeconds(5);
+    private static final int TARGET_YEAR = 2024;
+    private static final int TARGET_SEASON = 2;
+
     private WebDriver driver;
     private String targetURL = "https://myanimelist.net/anime/season/";
     private String season;
@@ -161,7 +164,7 @@ public class DynamicMalScraper {
      * @param args unused
      */
     public static void main(String[] args) {
-        DynamicMalScraper scraper = new DynamicMalScraper(2024, 2);
+        DynamicMalScraper scraper = new DynamicMalScraper(TARGET_YEAR, TARGET_SEASON);
         try {
             List<Map<String, Object>> Spring24TvNew = scraper.getTvNew();
             List<Map<String, Object>> Spring24Movies = scraper.getMovies();
